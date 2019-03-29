@@ -1,4 +1,5 @@
 import arcade.key
+import random
 
 MOVEMENT_SPEED = 4
 DIR_STILL = 0
@@ -52,6 +53,18 @@ class Worm:
         pass
 
 
+class Fish:
+    def __init__(self, world, x, y):
+        self.world = world
+        self.x = x
+        self.y = y
+        self.is_catched = False
+
+    def update(self):
+        if not self.is_catched:
+            self.x += 2
+
+
 class World:
     STATE_FROZEN = 1
     STATE_STARTED = 2
@@ -62,13 +75,16 @@ class World:
         self.height = height
         self.boat = Boat(self, 700, 600)
         self.worm = Worm(self, 60, 100)
+        self.fish_list = []
+        self.fish = Fish(self, 0, random.randint(20, 500))
         self.state = World.STATE_FROZEN
         self.next_direction = DIR_STILL
 
     def update(self, delta):
-        if self.state in [World.STATE_FROZEN,World.STATE_DEAD]:
+        if self.state in [World.STATE_FROZEN, World.STATE_DEAD]:
             return
         self.boat.update(delta)
+        self.fish.update()
 
     def start(self):
         self.state = World.STATE_STARTED
