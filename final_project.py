@@ -1,5 +1,5 @@
 import arcade
-from mol_project import World
+from mol_project import *
 
 SCREEN_WIDTH = 1400
 SCREEN_HEIGHT = 800
@@ -25,14 +25,22 @@ class Window(arcade.Window):
 
         arcade.set_background_color(arcade.color.SEA_BLUE)
         self.world = World(SCREEN_WIDTH, SCREEN_HEIGHT)
-        self.boat_sprite = ModelSprite("boat.png", model=self.world.boat)
+        self.boat_sprite_l = ModelSprite("boatL.png", model=self.world.boat)
+        self.boat_sprite_r = ModelSprite("boatR.png", model=self.world.boat)
+        self.fish_sprite = ModelSprite("fish1.png", model=self.world.fish)
 
     def update(self, delta):
         self.world.update(delta)
 
     def on_draw(self):
         arcade.start_render()
-        self.boat_sprite.draw()
+        if self.world.boat.next_direction == 2:
+            self.boat_sprite_r.draw()
+        elif self.world.boat.next_direction == 4:
+            self.boat_sprite_l.draw()
+        else:
+            self.boat_sprite_r.draw()
+        self.fish_sprite.draw()
 
     def on_key_press(self, key, key_modifiers):
         if not self.world.is_started():
