@@ -37,7 +37,8 @@ class Boat:
         self.y = y
 
     def update(self, delta):
-        self.move(self.next_direction)
+        if self.world.worm.space is not True:
+            self.move(self.next_direction)
 
     def move(self, direction):
         self.x += MOVEMENT_SPEED * DIR_OFFSETS[direction][0]
@@ -50,14 +51,19 @@ class Worm:
         self.world = world
         self.x = self.world.boat.x
         self.y = self.world.boat.y
+        self.space = False
         self.stat = True
+        self.boat_head = "R"
         self.vy = 0
         self.score = 0
-        self.count = 1
+        self.is_hooked = 1
 
     def update(self, delta):
-        if self.count == 1:
+        if self.is_hooked == 1 and self.boat_head == "R":
             self.x = self.world.boat.x
+            self.y = self.world.boat.y
+        elif self.is_hooked == 1 and self.boat_head == "L":
+            self.x = self.world.boat.x - 73
             self.y = self.world.boat.y
         if self.stat:
             if self.y > 0 and self.vy <= 0:
@@ -69,10 +75,12 @@ class Worm:
             self.back()
             self.move_up()
 
-    def attack(self):
-        self.count = 0
-        self.world.boat.next_direction = DIR_STILL
-        self.vy = - Worm.WORM_SPEED
+    def hooking(self):
+        if self.space is not True:
+            self.is_hooked = 0
+            self.world.boat.direction = DIR_STILL
+            self.vy = - Worm.WORM_SPEED
+            self.space = True
 
     def back(self):
         self.vy = Worm.WORM_SPEED
@@ -83,8 +91,9 @@ class Worm:
         else:
             self.y = 600
             self.vy = 0
+            self.space = False
             self.stat = True
-            self.count = 1
+            self.is_hooked = 1
 
     def move_down(self):
         self.y += self.vy
@@ -150,6 +159,11 @@ class World:
 
     def on_key_press(self, key, key_modifiers):
         if key in KEY_MAP:
-            self.boat.next_direction = KEY_MAP[key]
+            if self.worm.space is not True:
+                self.boat.next_direction = KEY_MAP[key]
+                if key == arcade.key.RIGHT:
+                    self.boat.boat_head = "R"
+                elif key == arcade.key.LEFT:
+                    self.boat.boat_head = "L"
         if key == arcade.key.SPACE:
-            self.worm.attack()
+            self.worm.hooking()

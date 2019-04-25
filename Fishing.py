@@ -35,14 +35,16 @@ class Window(arcade.Window):
     def on_draw(self):
         arcade.start_render()
         self.background.draw()
-        if self.world.boat.next_direction == 2:
-            self.boat_sprite_r.draw()
-        elif self.world.boat.next_direction == 4:
-            self.boat_sprite_l.draw()
-        else:
-            self.boat_sprite_r.draw()
         if self.world.worm.y >= 0:
-            arcade.draw_circle_filled(self.world.worm.x + 73, self.world.worm.y - 55, 10, arcade.color.BLACK)
+            if self.world.boat.next_direction == 2:
+                self.boat_sprite_r.draw()
+                arcade.draw_circle_filled(self.world.worm.x + 73, self.world.worm.y - 55, 10, arcade.color.BLACK)
+            elif self.world.boat.next_direction == 4:
+                self.boat_sprite_l.draw()
+                arcade.draw_circle_filled(self.world.worm.x - 73, self.world.worm.y - 55, 10, arcade.color.BLACK)
+            else:
+                self.boat_sprite_r.draw()
+                arcade.draw_circle_filled(self.world.worm.x + 73, self.world.worm.y - 55, 10, arcade.color.BLACK)
         if self.world.fish1.stat:
             self.fish_sprite_1.draw()
 
