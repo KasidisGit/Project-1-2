@@ -41,7 +41,12 @@ class Boat:
             self.move(self.next_direction)
 
     def move(self, direction):
-        self.x += MOVEMENT_SPEED * DIR_OFFSETS[direction][0]
+        if self.x >= -150:
+            self.x += MOVEMENT_SPEED * DIR_OFFSETS[direction][0]
+            if self.x >= 1550:
+                self.x = 0
+        else:
+            self.x = 1400
 
 
 class Worm:
@@ -56,13 +61,13 @@ class Worm:
         self.boat_head = "R"
         self.vy = 0
         self.score = 0
-        self.is_hooked = 1
+        self.is_hooked = False
 
     def update(self, delta):
-        if self.is_hooked == 1 and self.boat_head == "R":
+        if self.is_hooked is False and self.boat_head == "R":
             self.x = self.world.boat.x
             self.y = self.world.boat.y
-        elif self.is_hooked == 1 and self.boat_head == "L":
+        elif self.is_hooked is False and self.boat_head == "L":
             self.x = self.world.boat.x - 73
             self.y = self.world.boat.y
         if self.stat:
@@ -77,7 +82,7 @@ class Worm:
 
     def hooking(self):
         if self.space is not True:
-            self.is_hooked = 0
+            self.is_hooked = True
             self.world.boat.direction = DIR_STILL
             self.vy = - Worm.WORM_SPEED
             self.space = True
@@ -93,7 +98,7 @@ class Worm:
             self.vy = 0
             self.space = False
             self.stat = True
-            self.is_hooked = 1
+            self.is_hooked = False
 
     def move_down(self):
         self.y += self.vy
@@ -108,6 +113,7 @@ class Fish1:
         self.vy = 5
         self.stat = True
         self.is_caught = False
+        self.score = 300
 
     def update(self):
         if self.stat:
@@ -115,6 +121,67 @@ class Fish1:
 
     def hit(self):
         if self.x - 50 <= self.world.worm.x <= self.x + 50 and self.y - 75 <= self.world.worm.y <= self.y + 75:
+            self.is_caught = True
+            self.world.worm.stat = False
+
+    def catch(self):
+        if self.is_caught:
+            # World.all_score += self.score
+            self.vx = 0
+            self.y += self.vy
+            if self.y >= self.world.boat.y - 55:
+                self.stat = False
+
+    def back(self):
+        pass
+
+
+class Fish2:
+    def __init__(self, world, x, y):
+        self.world = world
+        self.x = x
+        self.y = y
+        self.vx = 5
+        self.vy = 5
+        self.stat = True
+        self.is_caught = False
+        self.score = 100
+
+    def update(self):
+        if self.stat:
+            self.x += self.vx
+
+    def hit(self):
+        if self.x - 50 <= self.world.worm.x <= self.x + 50 and self.y - 75 <= self.world.worm.y <= self.y + 75:
+            self.is_caught = True
+            self.world.worm.stat = False
+
+    def catch(self):
+        if self.is_caught:
+            # World.all_score += self.score
+            self.vx = 0
+            self.y += self.vy
+            if self.y >= self.world.boat.y - 55:
+                self.stat = False
+
+
+class Fish3:
+    def __init__(self, world, x, y):
+        self.world = world
+        self.x = x
+        self.y = y
+        self.vx = 5
+        self.vy = 5
+        self.stat = True
+        self.is_caught = False
+        self.score = 1000
+
+    def update(self):
+        if self.stat:
+            self.x += self.vx
+
+    def hit(self):
+        if self.x - 150 <= self.world.worm.x <= self.x + 150 and self.y - 75 <= self.world.worm.y <= self.y + 75:
             self.is_caught = True
             self.world.worm.stat = False
 
@@ -137,8 +204,10 @@ class World:
         self.background = Background(self, 700, 400)
         self.boat = Boat(self, 700, 600)
         self.worm = Worm(self, 700, 600)
-        self.fish_list = []
-        self.fish1 = Fish1(self, -150, random.randint(200, 500))
+        self.all_score = 0
+        self.fish1 = Fish1(self, -550, random.randint(200, 500))
+        self.fish2 = Fish2(self, -150, random.randint(200, 500))
+        self.fish3 = Fish3(self, -950, random.randint(200, 500))
         self.state = World.STATE_FROZEN
         self.next_direction = DIR_STILL
 
@@ -150,6 +219,12 @@ class World:
         self.fish1.update()
         self.fish1.hit()
         self.fish1.catch()
+        self.fish2.update()
+        self.fish2.hit()
+        self.fish2.catch()
+        self.fish3.update()
+        self.fish3.hit()
+        self.fish3.catch()
 
     def start(self):
         self.state = World.STATE_STARTED
