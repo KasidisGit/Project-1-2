@@ -1,4 +1,3 @@
-import arcade
 from models import *
 
 SCREEN_WIDTH = 1400
@@ -24,10 +23,12 @@ class Window(arcade.Window):
         super().__init__(width, height)
 
         self.world = World(SCREEN_WIDTH, SCREEN_HEIGHT)
-        self.background = ModelSprite("resource/images/BG2.jpg", model=self.world.background)
-        self.boat_sprite_l = ModelSprite("resource/images/boatL.png", model=self.world.boat)
-        self.boat_sprite_r = ModelSprite("resource/images/boatR.png", model=self.world.boat)
-        self.fish_sprite_1 = ModelSprite("resource/images/fish1.png", model=self.world.fish1)
+        self.background = ModelSprite("BG2.jpg", model=self.world.background)
+        self.boat_sprite_l = ModelSprite("boatL.png", model=self.world.boat)
+        self.boat_sprite_r = ModelSprite("boatR.png", model=self.world.boat)
+        self.fish_sprite_1 = ModelSprite("fish1.png", model=self.world.fish1)
+        self.fish_sprite_2 = ModelSprite("fish7.png", model=self.world.fish2)
+        self.fish_sprite_3 = ModelSprite("fish4.png", model=self.world.fish3)
 
     def update(self, delta):
         self.world.update(delta)
@@ -47,6 +48,10 @@ class Window(arcade.Window):
                 arcade.draw_circle_filled(self.world.worm.x + 73, self.world.worm.y - 55, 10, arcade.color.BLACK)
         if self.world.fish1.stat:
             self.fish_sprite_1.draw()
+        if self.world.fish2.stat:
+            self.fish_sprite_2.draw()
+        if self.world.fish3.stat:
+            self.fish_sprite_3.draw()
 
     def on_key_press(self, key, key_modifiers):
         if not self.world.is_started():
@@ -62,4 +67,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
